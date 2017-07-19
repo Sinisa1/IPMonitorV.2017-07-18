@@ -73,6 +73,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ConfigUtil.cs" />
     <Compile Include="IIPInfo.cs" />
     <Compile Include="IpInfo.cs" />
     <Compile Include="Logger.cs" />

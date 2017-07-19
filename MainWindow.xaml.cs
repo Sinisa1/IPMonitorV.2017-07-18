@@ -101,7 +101,8 @@ namespace IPMonitor
         }
         private void SetCurrentIpAddress()
         {
-            timer1.SetCurrentlIP(timer1.web.GetIpifyIPAddress(Web.URL_IpiFy));
+    //        timer1.SetCurrentlIP(timer1.web.GetIpifyIPAddress(Web.URL_IpiFy));
+            timer1.SetCurrentlIP(timer1.web.GetIPAddress(Settings.IPCheckURLs[0]));
             lblCurrentIP.Content = timer1.currentIP;
 
         }
