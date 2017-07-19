@@ -1,0 +1,69 @@
+﻿<Window x:Class="IPMonitor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="574" Width="893">
+    <Grid>
+        <!--<Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="49,147,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />-->
+        <TextBox Height="36" HorizontalAlignment="Left" Margin="41,471,0,0" Name="textBoxStatus" VerticalAlignment="Top" Width="472" TextWrapping="Wrap" />
+        <TextBox BorderBrush="Black" BorderThickness="1"  Height="28" HorizontalAlignment="Right" Margin="0,0,639,0" Name="textTime" Text="-" VerticalAlignment="Top" Width="170" />
+        <Label Content="Time" Height="28" HorizontalAlignment="Left" Margin="11,0,0,0" Name="label2" VerticalAlignment="Top" Width="44" />
+        <Grid Height="410" HorizontalAlignment="Left" Margin="41,36,0,0" Name="grid2" VerticalAlignment="Top" Width="777">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="398*" />
+                <ColumnDefinition Width="379*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="165*" />
+                <RowDefinition Height="181*" />
+            </Grid.RowDefinitions>
+            <Grid Height="167" HorizontalAlignment="Left" Margin="21,21,0,0" Name="grid3" VerticalAlignment="Top" Width="342" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="156*" />
+                    <ColumnDefinition Width="186*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="54*" />
+                    <RowDefinition Height="50*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="34*" />
+                    <RowDefinition Height="29*" />
+                </Grid.RowDefinitions>
+                <Button Content="Set Custom IP" Height="23" HorizontalAlignment="Left" Margin="0,0,0,0" Name="buttonSetCustomIP" VerticalAlignment="Top" Width="153" Click="buttonSetCustomIP_Click" Grid.ColumnSpan="1" />
+                <Label Content="127.0.0.1" Height="28" HorizontalAlignment="Left" Name="labelCustomIPValue" VerticalAlignment="Top" Width="81" BorderThickness="1" BorderBrush="Black" Margin="20,7,0,0" Grid.Column="1" />
+                <Button Content="Reset Initial IP" Height="23" HorizontalAlignment="Left" Margin="0,0,0,0" Name="buttonResetIp" VerticalAlignment="Top" Width="153" Click="buttonResetIp_Click" Grid.Row="1" Grid.ColumnSpan="2" />
+                <Button Content="Kill" Height="23" HorizontalAlignment="Left" Name="buttonKill" VerticalAlignment="Top" Width="156" Click="buttonKill_Click" Grid.Row="3" Grid.ColumnSpan="2" Margin="6,0,0,0" />
+                <Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="0,0,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click"  Grid.Row="4" />
+                <Button Content="Run Notepad" Height="23" HorizontalAlignment="Left" x:Name="buttonRunNotepad" VerticalAlignment="Top" Width="156"  Grid.Row="3" Margin="20,1,0,0" Grid.Column="1" Click="buttonRunNotepad_Click" />
+            </Grid>
+            <Grid Height="176" HorizontalAlignment="Left" Margin="25,16,0,0" Name="grid1" VerticalAlignment="Top" Width="373">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="38*" />
+                    <RowDefinition Height="36*" />
+                    <RowDefinition Height="36*" />
+                    <RowDefinition Height="39*" />
+                    <RowDefinition Height="40*" />
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180*" />
+                    <ColumnDefinition Width="601*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="" Height="28" HorizontalAlignment="Left" Name="labelStatus" VerticalAlignment="Top" Width="263" BorderThickness="1" BorderBrush="Black" Grid.Column="1" Grid.Row="1" />
+                <Label Content="Status" Height="28" HorizontalAlignment="Right" Margin="0,0,0,0" Name="label" VerticalAlignment="Top" Width="73" Grid.Row="1" />
+                <Label Content="Initial IP" Height="28" HorizontalAlignment="Right" Margin="0,0,0,0" Name="label3" VerticalAlignment="Top" Width="73" Grid.Row="2" />
+                <Label Content="" Height="28" HorizontalAlignment="Left" Name="lblInitalIP" VerticalAlignment="Top" Width="126" BorderThickness="1" BorderBrush="Black" Grid.Column="1" Grid.Row="2" />
+                <Label Content="Current IP" Height="28" HorizontalAlignment="Right" Margin="0,0,0,0" Name="label1" VerticalAlignment="Top" Width="73" Grid.Row="3" />
+                <Label Content="" Height="28" HorizontalAlignment="Left" Name="lblCurrentIP" VerticalAlignment="Top" Width="126" BorderThickness="1" BorderBrush="Black" Grid.Column="1" Grid.Row="3" />
+                <Label Content="Kill Active" Height="28" HorizontalAlignment="Right" Margin="0,0,0,0" Name="label4" VerticalAlignment="Top" Width="73" Grid.Row="4" />
+                <TextBox BorderBrush="Black" BorderThickness="1" Text="-" Height="28" HorizontalAlignment="Left" Name="textKillStatus" VerticalAlignment="Top" Width="99" FontWeight="Bold" Grid.Column="1" Grid.Row="4" />
+            </Grid>
+            <DataGrid AutoGenerateColumns="False" Grid.Column="1" Height="255" HorizontalAlignment="Left" Margin="6,6,0,0" Name="dataGridStatistics" VerticalAlignment="Top" Width="274" Grid.RowSpan="2">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Property"  Binding="{Binding Key}" />
+                    <DataGridTextColumn Header="Value"  Binding="{Binding Value}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="25,6,0,0" TextWrapping="Wrap" Text="Ver. 2017-03-03" VerticalAlignment="Top" Width="110"/>
+        </Grid>
+    </Grid>
+</Window>
