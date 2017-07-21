@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 namespace IPMonitor
 {
     public static class Utilities
@@ -41,4 +42,25 @@ namespace IPMonitor
             Process.Start(name_);
         }
     }
- }
+    /// <summary>
+    /// Extend a list for picking a random element
+    /// https://stackoverflow.com/questions/2019417/access-random-item-in-list
+    /// </summary>
+    public static class EnumerableExtension
+    {
+        public static T PickRandom<T>(this IEnumerable<T> source)
+        {
+            return source.PickRandom(1).Single();
+        }
+
+        public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count)
+        {
+            return source.Shuffle().Take(count);
+        }
+
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
+        {
+            return source.OrderBy(x => Guid.NewGuid());
+        }
+    }
+}

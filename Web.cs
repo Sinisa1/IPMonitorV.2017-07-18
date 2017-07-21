@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Net;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.IO;
-namespace IPMonitor
-{
-    public class Web
-    {
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+
+namespace IPMonitor {
+    public class Web {
         /// <summary>
         /// 
- 
+
         //http://stackoverflow.com/questions/13270042/get-public-remote-ip-address
         //Akamai provides a "What is my IP" page that you can fetch:
         //require 'open-uri'
@@ -23,45 +23,91 @@ namespace IPMonitor
         //•http://ipogre.com   DOWN
         //•http://ident.me  OK
         //•http://bot.whatismyipaddress.com  //OK
- 
+
         /// </summary>
-        public const string URL_IpiFy = "https://api.ipify.org";
+    //    public const string URL_IpiFy = "https://api.ipify.org";
         //      public const string URL_IpInfo = "http://IpInfo.io";
         //New list 2017-01-08
         // freegeoip.net 
 
-            /// <summary>
-            /// Returns IP Address from an URL. the web respose may be in different format. Use appropriate response parsers to extract the IP address.
-            /// </summary>
-            /// <param name="urlAddress_"></param>
-            /// <returns></returns>
-        public IPAddress GetIPAddress(IPCheckURLsConfigInstanceElement ipCheckURL)
-         
-        {
+        /// <summary>
+        /// Returns IP Address from an URL. the web respose may be in different format. Use appropriate response parsers to extract the IP address.
+        /// </summary>
+        /// <param name="urlAddress_"></param>
+        /// <returns></returns>
+        /// 
+
+        public IPAddress GetIPAddress() {
+            IPAddress ip = new IPAddress(0);
+            List<string> usedURLs = new List<string>();
+            IPCheckURLsConfigInstanceElement currIPCheckURL = null;
+            string msg;
+
+            List<string> codes = Settings.IPCheckURLs.Select(x => x.Code ).ToList<string>();
+            int attemptNumber = 1;
+            bool IsValid = false;
+            try {
+                while (codes.Count > 0) {
+
+                    string currCode = codes.PickRandom();
+
+                    currIPCheckURL = Settings.IPCheckURLs.Where(x => x.Code == currCode).FirstOrDefault();
+                    currIPCheckURL.NumberUsed++;
+
+                    if (false) {
+                        ip = GetIPAddress(currIPCheckURL, ref IsValid);
+                        currIPCheckURL.NumberFailed += IsValid ? 0 : 1;  //Add 1 if failed;
+
+                    } else { //test call
+                        int success = Settings.randomZeroOne.Next(0, 2);
+                        IsValid = (success == 1);
+                        currIPCheckURL.NumberFailed += ((currIPCheckURL.TestFailureCorrectionFactor == 0 ? 1.0 : currIPCheckURL.TestFailureCorrectionFactor) * (IsValid ? 0 : 1));  //Simulate success/failure by getting rnd  0 or 1;
+                    }
+                    currIPCheckURL.CalculateSuccessPercent();
+                    if (IsValid) {
+                        break; // Succcess 
+                    } else {//failure. Try next code if any remained
+                        Settings.LogEntriesAdd(string.Format("Attempt # {0}.Failed Code:{1}",  attemptNumber, currIPCheckURL.Code));
+                        codes = codes.Where(x => x != currCode).ToList<string>(); // Remove the currCode and try next random code
+                        Thread.Sleep(2 * 1000); //sleep 2 sec before the next attempt
+                    }
+                    attemptNumber++;
+                }//while codes
+
+                if (!IsValid) {
+                    msg = string.Format("{0} ALL FAILED after {1} attempts", Utilities.GetDateTime(), attemptNumber - 1);
+                    Settings.LogEntriesAdd(msg);
+                    Logger.logger.Error(msg);
+                }
+            } catch (Exception ex) {
+                Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
+                Settings.LogEntriesAdd("GetIPAddress failed" + ex.Message);
+                Logger.logger.Error("GetIPAddress failed", ex);
+
+            }
+            return ip;
+        }
+
+
+        public IPAddress GetIPAddress(IPCheckURLsConfigInstanceElement ipCheckURL, ref bool IsValid) {
 
             IPAddress ip = new IPAddress(0);
-            try
-            {
+            try {
                 Uri uri = new Uri(ipCheckURL.Url);
 
-                using (WebClientCustom webClient = new WebClientCustom() { timeout = Settings.TimeoutInterval })
-                {
+                using (WebClientCustom webClient = new WebClientCustom() { timeout = Settings.TimeoutInterval }) {
 
                     //  client.GetWebRequest(uri);
 
 
-                    using (Stream stream = webClient.OpenRead(uri))
-                    {
-                        if (stream != null)
-                        {
-                            using (var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8, false))
-                            {
+                    using (Stream stream = webClient.OpenRead(uri)) {
+                        if (stream != null) {
+                            using (var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8, false)) {
                                 string htmlCode;
-                                while ((htmlCode = reader.ReadLine()) != null)
-                                {
-                                    if (htmlCode != String.Empty)
-                                    {
+                                while ((htmlCode = reader.ReadLine()) != null) {
+                                    if (htmlCode != String.Empty) {
                                         ip = IPAddress.Parse(htmlCode);
+                                        IsValid = true;
                                         return ip;
                                     }
 
@@ -70,9 +116,8 @@ namespace IPMonitor
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
+                IsValid = false;
                 Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
                 Logger.logger.Error(ipCheckURL.Code, ex);
             }
@@ -84,56 +129,45 @@ namespace IPMonitor
 
 
 
-        public IPAddress GetIpifyIPAddress(string urlAddress_)
-        {
-            IPAddress ip = new IPAddress(0);
-            try
-            {
-                Uri uri = new Uri(urlAddress_);
+        //public IPAddress GetIpifyIPAddress(string urlAddress_) {
+        //    IPAddress ip = new IPAddress(0);
+        //    try {
+        //        Uri uri = new Uri(urlAddress_);
 
-                using (WebClientCustom webClient = new WebClientCustom() { timeout = Settings.TimeoutInterval } )
-                {
+        //        using (WebClientCustom webClient = new WebClientCustom() { timeout = Settings.TimeoutInterval }) {
 
-                    //  client.GetWebRequest(uri);
+        //            //  client.GetWebRequest(uri);
 
 
-                    using (Stream stream = webClient.OpenRead(uri))
-                    {
-                        if (stream != null)
-                        {
-                            using (var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8, false))
-                            {
-                                string htmlCode;
-                                while ((htmlCode = reader.ReadLine()) != null)
-                                {
-                                    if (htmlCode != String.Empty)
-                                    {
-                                        ip = IPAddress.Parse(htmlCode);
-                                        return ip;
-                                    }
+        //            using (Stream stream = webClient.OpenRead(uri)) {
+        //                if (stream != null) {
+        //                    using (var reader = new System.IO.StreamReader(stream, System.Text.Encoding.UTF8, false)) {
+        //                        string htmlCode;
+        //                        while ((htmlCode = reader.ReadLine()) != null) {
+        //                            if (htmlCode != String.Empty) {
+        //                                ip = IPAddress.Parse(htmlCode);
+        //                                return ip;
+        //                            }
 
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
-                Logger.logger.Error("GetIpifyIPAddress", ex);
-            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    } catch (Exception ex) {
+        //        Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
+        //        Logger.logger.Error("GetIpifyIPAddress", ex);
+        //    }
 
-            return ip;
+        //    return ip;
 
 
-        }
+        //}
 
-   
+
 
         [Obsolete("Not in use")]
-        public void GetIP()
-        {
+        public void GetIP() {
 
             var externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
             externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
@@ -143,26 +177,21 @@ namespace IPMonitor
         }
 
         [Obsolete("Not in use")]
-        public string GetIPString()
-        {
+        public string GetIPString() {
             string externalIP = "ERROR";
-            try
-            {
+            try {
                 externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
                 externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
                                     .Matches(externalIP)[0].ToString();
                 WPFMessage.msg = string.Format("{0}   at:{1}", externalIP, DateTime.Now.ToLocalTime());
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 externalIP += " " + ex.Message;
             }
             return externalIP;
         }
 
         [Obsolete("Not in use")]
-        public static class WPFMessage
-        {
+        public static class WPFMessage {
             public static bool isWorkerRunning;
             public static string msg { get; set; }
 
@@ -171,15 +200,37 @@ namespace IPMonitor
 
     }
 
-    public class WebClientCustom : WebClient
-    {
+    public class WebClientCustom : WebClient {
         public int timeout { get; set; }
-        protected override WebRequest GetWebRequest(Uri uri)
-        {
+        protected override WebRequest GetWebRequest(Uri uri) {
             WebRequest w = base.GetWebRequest(uri);
             w.Timeout = timeout;// 20 * 60 * 1000;
             return w;
         }
     }
+    //public class IPAddressCustom : IPAddress
+    //{
+    //    //public IPAddressCustom() : base(0) { }
+
+    //    public IPAddressCustom(byte[] address) : base(address)
+    //    {
+    //        // must override this constructor to enable build //    
+    //    }
+
+    //    public IPAddressCustom(Int64 address) : base(address)
+    //    {
+    //        // must override this constructor to enable
+    //        // build / compatibility with base class constructors
+    //    }
+
+    //    public IPAddressCustom(byte[] address, Int64 scopeid) : base(address, scopeid)
+    //    {
+    //        // must override this constructor to enable
+    //        // build / compatibility with base class constructors
+    //    }
+
+    //    public bool IsValid { get; set; }// Set the value in the IP checker from URL
+
+    //}
 
 }
