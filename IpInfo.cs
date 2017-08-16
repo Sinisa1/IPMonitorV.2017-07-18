@@ -28,7 +28,7 @@ namespace IPMonitor {
                     }
                 }
             } catch (Exception ex) {
-                Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
+           //     Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
                 Logger.logger.Error("GetIpInfo", ex);
 
             }

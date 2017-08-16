@@ -63,6 +63,13 @@ namespace IPMonitor {
         void IPCheckTimerInterval_Tick(object sender, EventArgs e) {
             string time = Utilities.GetDateTime(), msg;
 
+            if(timer1.killActive) {
+                Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
+                msg = string.Format("Kill Switch active. Kill {0}", Settings.appToKillList);
+                Logger.logger.InfoFormat(msg);
+                Settings.LogEntriesAdd(msg);
+
+            }
             textTime.Text = time;
             CheckAndUpdateReferenceIP();
 

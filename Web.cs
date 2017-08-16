@@ -43,18 +43,18 @@ namespace IPMonitor {
             IPCheckURLsConfigInstanceElement currIPCheckURL = null;
             string msg;
 
-            List<string> codes = Settings.IPCheckURLs.Select(x => x.Code ).ToList<string>();
+            List<string> codes = Settings.IPCheckURLs.Select(x => x.Code).ToList<string>();
             int attemptNumber = 1;
             bool IsValid = false;
-            try {
-                while (codes.Count > 0) {
-
+            // try {
+            while (codes.Count > 0 && attemptNumber<=3) {
+                try {
                     string currCode = codes.PickRandom();
 
                     currIPCheckURL = Settings.IPCheckURLs.Where(x => x.Code == currCode).FirstOrDefault();
                     currIPCheckURL.NumberUsed++;
 
-                    if (false) {
+                    if (true) {
                         ip = GetIPAddress(currIPCheckURL, ref IsValid);
                         currIPCheckURL.NumberFailed += IsValid ? 0 : 1;  //Add 1 if failed;
 
@@ -67,24 +67,38 @@ namespace IPMonitor {
                     if (IsValid) {
                         break; // Succcess 
                     } else {//failure. Try next code if any remained
-                        Settings.LogEntriesAdd(string.Format("Attempt # {0}.Failed Code:{1}",  attemptNumber, currIPCheckURL.Code));
+                        Settings.LogEntriesAdd(string.Format("Attempt # {0}.Failed Code:{1}", attemptNumber, currIPCheckURL.Code));
                         codes = codes.Where(x => x != currCode).ToList<string>(); // Remove the currCode and try next random code
-                        Thread.Sleep(2 * 1000); //sleep 2 sec before the next attempt
+                        Thread.Sleep(500); //sleep .5 sec before the next attempt
                     }
-                    attemptNumber++;
-                }//while codes
 
-                if (!IsValid) {
-                    msg = string.Format("{0} ALL FAILED after {1} attempts", Utilities.GetDateTime(), attemptNumber - 1);
-                    Settings.LogEntriesAdd(msg);
-                    Logger.logger.Error(msg);
+                } catch (Exception ex) {
+                    //if (codes.Count == 0) {
+                    //    Utilities.KillProgram(Settings.appToKillArray); // Kill the app only if there are no more codes left, otherwise log an error and continue trying with remaining codes.
+                    //}
+                    Settings.LogEntriesAdd("GetIPAddress failed" + ex.Message);
+                    Logger.logger.Error(string.Format("GetIPAddress failed. Failed Code:{0}",  currIPCheckURL.Code), ex);
+
                 }
-            } catch (Exception ex) {
-                Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
-                Settings.LogEntriesAdd("GetIPAddress failed" + ex.Message);
-                Logger.logger.Error("GetIPAddress failed", ex);
 
+                attemptNumber++;
+            }//while codes
+
+            if (!IsValid) {
+                Utilities.KillProgram(Settings.appToKillArray); // No more codes left to try. Kill the apps
+
+                msg = string.Format("{0} ALL FAILED after {1} attempts", Utilities.GetDateTime(), attemptNumber - 1);
+                Settings.LogEntriesAdd(msg);
+                Logger.logger.Error(msg);
             }
+            //} catch (Exception ex) {
+            //    if (codes.Count == 0) {
+            //        Utilities.KillProgram(Settings.appToKillArray); // Kill the app only if there are no more codes left, otherwise log an error and continue trying with remaining codes.
+            //    }
+            //    Settings.LogEntriesAdd("GetIPAddress failed" + ex.Message);
+            //    Logger.logger.Error("GetIPAddress failed", ex);
+
+            //}
             return ip;
         }
 
@@ -118,7 +132,7 @@ namespace IPMonitor {
                 }
             } catch (Exception ex) {
                 IsValid = false;
-                Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
+                //   Utilities.KillProgram(Settings.appToKillArray); // Continue killing until reset
                 Logger.logger.Error(ipCheckURL.Code, ex);
             }
 

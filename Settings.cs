@@ -46,8 +46,8 @@ namespace IPMonitor {
             //     msgQueue.Enqueue(string.Format("{0} {1}", Utilities.GetDateTime(), msg));
 
             int msgCount = msgArrList.Count;
-            if (msgCount > 15) {
-                msgArrList.RemoveRange(0, 5);
+            if (msgCount > 100) {
+                msgArrList.RemoveRange(0, 50);
             }
             msgArrList.Add(string.Format("{0} {1}", Utilities.GetDateTime(), msg));
         }

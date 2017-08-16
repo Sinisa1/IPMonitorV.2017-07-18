@@ -33,8 +33,7 @@
                 <Button Content="Set Reference IP to" Height="30" HorizontalAlignment="Left" Margin="0,0,0,0" Name="buttonSetCustomIP" VerticalAlignment="Top" Width="169" Click="buttonSetCustomIP_Click" Grid.ColumnSpan="1" />
                 <Label Content="127.0.0.1" Height="30" HorizontalAlignment="Left" Name="labelCustomIPValue" VerticalAlignment="Top" Width="105" BorderThickness="1" BorderBrush="Black" Margin="0,0,0,0" Grid.Column="1" />
                 <Button Content="Check and Reset Reference IP" Height="34" HorizontalAlignment="Left" Margin="0,0,0,0" Name="buttonResetIp" VerticalAlignment="Top" Width="169" Click="buttonResetIp_Click" Grid.Row="1" />
-                <Button Content="Kill" Height="23" HorizontalAlignment="Left" Name="buttonKill" VerticalAlignment="Top" Width="156" Click="buttonKill_Click" Grid.Row="3" Grid.ColumnSpan="2" Margin="6,0,0,0" />
-                <Button Content="Run Notepad" Height="23" HorizontalAlignment="Left" x:Name="buttonRunNotepad" VerticalAlignment="Top" Width="156"  Grid.Row="3" Margin="20,1,0,0" Grid.Column="1" Click="buttonRunNotepad_Click" />
+                <Button Content="Kill" Height="23" HorizontalAlignment="Left" Name="buttonKill" VerticalAlignment="Top" Width="156" Click="buttonKill_Click" Grid.Row="3" Grid.ColumnSpan="2" Margin="6,0,0,0" FontWeight="Bold" FontSize="14" Background="#FFF17272" />
             </Grid>
             <Grid Height="176" HorizontalAlignment="Left" Margin="25,16,0,0" Name="grid1" VerticalAlignment="Top" Width="373">
                 <Grid.RowDefinitions>
