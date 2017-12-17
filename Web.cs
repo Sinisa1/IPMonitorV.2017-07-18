@@ -37,27 +37,37 @@ namespace IPMonitor {
         /// <returns></returns>
         /// 
 
-        public IPAddress GetIPAddress() {
+        public IPAddress GetIPAddress(ref string message) {
             IPAddress ip = new IPAddress(0);
             List<string> usedURLs = new List<string>();
             IPCheckURLsConfigInstanceElement currIPCheckURL = null;
             string msg;
+            List<IPCheckURLsConfigInstanceElement> goodCandidates = Settings.IPCheckURLs.Where(x => (x.NumberUsed < 10 || (x.IPCheckSuccessPercent > 80.0 && x.NumberUsed >= 10))).ToList();
+            List<string> codes = goodCandidates.Select(x => x.Code).ToList<string>();
 
-            List<string> codes = Settings.IPCheckURLs.Select(x => x.Code).ToList<string>();
             int attemptNumber = 1;
             bool IsValid = false;
             // try {
-            while (codes.Count > 0 && attemptNumber<=3) {
+            while (codes.Count > 0 && attemptNumber <= 3) {
                 try {
                     string currCode = codes.PickRandom();
 
                     currIPCheckURL = Settings.IPCheckURLs.Where(x => x.Code == currCode).FirstOrDefault();
                     currIPCheckURL.NumberUsed++;
-
+                    message = currCode;
                     if (true) {
-                        ip = GetIPAddress(currIPCheckURL, ref IsValid);
-                        currIPCheckURL.NumberFailed += IsValid ? 0 : 1;  //Add 1 if failed;
 
+                        DateTime dtStart = DateTime.Now;
+                        ip = GetIPAddress(currIPCheckURL, ref IsValid);
+                        if (IsValid) {
+                            DateTime dtEnd = DateTime.Now;
+                            TimeSpan ts = (dtEnd - dtStart);
+                            double ms = ts.TotalMilliseconds;
+                            message += ". Response: " + ms.ToString("######") + "ms";
+
+                        } else {
+                            currIPCheckURL.NumberFailed++;// += IsValid ? 0 : 1;  //Add 1 if failed;
+                        }
                     } else { //test call
                         int success = Settings.randomZeroOne.Next(0, 2);
                         IsValid = (success == 1);
@@ -77,7 +87,7 @@ namespace IPMonitor {
                     //    Utilities.KillProgram(Settings.appToKillArray); // Kill the app only if there are no more codes left, otherwise log an error and continue trying with remaining codes.
                     //}
                     Settings.LogEntriesAdd("GetIPAddress failed" + ex.Message);
-                    Logger.logger.Error(string.Format("GetIPAddress failed. Failed Code:{0}",  currIPCheckURL.Code), ex);
+                    Logger.logger.Error(string.Format("GetIPAddress failed. Failed Code:{0}", currIPCheckURL.Code), ex);
 
                 }
 

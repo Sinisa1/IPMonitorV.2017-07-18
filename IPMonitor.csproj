@@ -115,6 +115,8 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Knights Microsoft SQL Server 2012 Integration Services 24-Hour Trainer - source code_ 9781118479582_download.zip" />
+    <None Include="Knights Microsoft SQL Server 2012 Integration Services 24-Hour Trainer V413HAV.pdf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

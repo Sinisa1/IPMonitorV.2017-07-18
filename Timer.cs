@@ -14,9 +14,9 @@ namespace IPMonitor
 
         public string ResetIpString()
         {
-
+            string msg = "";
    //         initialIP = web.GetIpifyIPAddress(Web.URL_IpiFy);
-            referenceIP = web.GetIPAddress();
+            referenceIP = web.GetIPAddress(ref msg);
 
             killActive = false;
             Logger.logger.InfoFormat("IP Manually reset to current IP {0}", referenceIP);

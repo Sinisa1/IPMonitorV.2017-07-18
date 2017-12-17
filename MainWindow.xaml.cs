@@ -102,8 +102,11 @@ namespace IPMonitor {
             textKillStatus.Text = timer1.killActive.ToString();
         }
         private void CheckAndUpdateReferenceIP() {
-            timer1.SetCurrentlIP(timer1.web.GetIPAddress());
+
+            string message="";
+            timer1.SetCurrentlIP(timer1.web.GetIPAddress(ref message));
             lblCurrentIP.Content = timer1.currentIP;
+            labelStatus.Content = message;
 
             dgIPStatistics.ItemsSource = Settings.IPCheckURLs.Select(x => new { x.Code, x.NumberUsed, x.NumberFailed, IPCheckSuccessPercent = Math.Round(x.IPCheckSuccessPercent, 2).ToString("#00.00") }).ToList();// < Tuple<string, long, long, double>>();
 

@@ -55,6 +55,8 @@ namespace IPMonitor {
         public double NumberUsed { get; set; } // Number of times used to check IP in the session
         public double NumberFailed { get; set; } // Number of times failed to return IP in the session
         private double ipCheckSuccessPercent;
+        public double TotalResponseTime { get; set; } // Sum of response times in ms. Use to calculate avg response time. Later create complete list of times and calculate STD.
+
         public double IPCheckSuccessPercent { // 100*(NumberUsed-NumberFailed)/NumberUsed as calculated value
             get { return ipCheckSuccessPercent; }
             private set { }
