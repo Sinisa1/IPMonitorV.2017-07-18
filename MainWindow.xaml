@@ -67,7 +67,7 @@
             <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="25,6,0,0" TextWrapping="Wrap" Text="Ver. 2018-02-07" VerticalAlignment="Top" Width="110"/>
             <DataGrid x:Name="dgIPStatistics" 
                 
-                Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,-86" Grid.Row="1" VerticalAlignment="Top" Height="290" Width="343">
+                Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Height="194" Width="343">
 
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="{x:Type DataGridColumnHeader}">
