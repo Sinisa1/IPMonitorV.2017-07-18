@@ -10,7 +10,7 @@ namespace IPMonitor
 
         public string currentIPmsg;
         public Web web = new Web();
-        public IpInfoIO ipInfo = new IpInfoIO();
+        public IPInfo_IpInfoIO ipInfo = new IPInfo_IpInfoIO();
 
         public string ResetIpString()
         {

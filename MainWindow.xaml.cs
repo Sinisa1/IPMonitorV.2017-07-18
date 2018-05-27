@@ -26,12 +26,8 @@ namespace IPMonitor {
 
             UpdateStatistics();
 
-            //   timer1 = new Timer();
-            //  Settings.SetAppsToKill();
-            buttonKill.Content = "Kill " + Settings.appToKillList;
-            //timer1.initialIP = timer1.web.GetIpifyIPAddress();
-            //timer1.currentIP = timer1.initialIP;
-
+             buttonKill.Content = "Kill " + Settings.appToKillList;
+ 
 
             log4net.Config.XmlConfigurator.Configure();
             Logger.logger.Debug("Start");
@@ -110,16 +106,11 @@ namespace IPMonitor {
 
             dgIPStatistics.ItemsSource = Settings.IPCheckURLs.Select(x => new { x.Code, x.NumberUsed, x.NumberFailed, IPCheckSuccessPercent = Math.Round(x.IPCheckSuccessPercent, 2).ToString("#00.00") }).ToList();// < Tuple<string, long, long, double>>();
 
-            //dgLog.ItemsSource = Settings.logEntries.Select(x => new { x }).ToList();
             dgLog.ItemsSource = Settings.msgArrList.ToArray().Select(x => new { x }).ToList();
-
-         
-
-
         }
         private void UpdateStatistics() {
 
-            IpInfoLocation ipInfo = timer1.ipInfo.GetIpInfo();
+            IpInfoAttributes ipInfo = timer1.ipInfo.PopulateIpInfoAttributes();//timer1.ipInfo.GetIpInfo();
             Dictionary<string, string> statistics = timer1.ipInfo.LocationToDictionary(ipInfo);
 
             dataGridStatistics.ItemsSource = statistics;
@@ -134,7 +125,7 @@ namespace IPMonitor {
         private void buttonResetIp_Click(object sender, RoutedEventArgs e) {
             lblReferenceIP.Content = timer1.ResetIpString();
             Settings.LogEntriesAdd(string.Format("Reset reference IP to :{0}", timer1.ResetIpString()));
-
+            UpdateStatistics();
 
         }
 
@@ -145,13 +136,15 @@ namespace IPMonitor {
             Settings.LogEntriesAdd(string.Format("Manual reset IP to :{0}", timer1.referenceIP));
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e) {
-            //     Web web = new Web();
-            timer1.ipInfo.GetIpInfo();
-        }
+       
 
         private void buttonRunNotepad_Click(object sender, RoutedEventArgs e) {
             Utilities.RunProcess("notepad.exe");
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e) {
+            IPInfo_IpApiCom ipInfo = new IPInfo_IpApiCom();
+//            ipInfo.GetIpInfo();
         }
     }
 }
